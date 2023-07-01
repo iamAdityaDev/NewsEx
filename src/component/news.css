@@ -1,0 +1,25 @@
+.headlines
+{
+    font-size: 1.8rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: rgb(87, 87, 87);
+    /* position: absolute;
+    top:6%; */
+    margin-top:75px;
+    margin-bottom:10px;
+    text-align: center;
+}
+.container
+{
+    width: 100%;
+    height: auto;
+    /* position: absolute;
+    top: 21.1%; */
+    margin-top: 40px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    /* background-color: red; */
+}
