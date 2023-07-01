@@ -6,7 +6,7 @@ import NewsUpdate from "./news_update";
 const News = (props) => {
   const [articles, setArticles] = useState([]);
   const [page, setPage] = useState(1);
-  const [totalResults, setTotalResults] = useState(0);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     document.title = `NewsEx - ${props.category}`;
@@ -19,10 +19,11 @@ const News = (props) => {
       const url = `https://newsapi.org/v2/top-headlines?country=${props.country}&apiKey=969db4cd0c684fdc9b4fac646850d457&page=${page}&pageSize=10&category=${props.category}`;
       const data = await fetch(url);
       const parsed_data = await data.json();
-      setArticles(parsed_data.articles);
-      setTotalResults(parsed_data.totalResults);
+      setArticles((prevArticles) => [...prevArticles, ...parsed_data.articles]);
+      setError(false);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setError(true);
     }
   };
 
@@ -32,22 +33,24 @@ const News = (props) => {
       const url = `https://newsapi.org/v2/top-headlines?country=${props.country}&apiKey=969db4cd0c684fdc9b4fac646850d457&page=${nextPage}&pageSize=10&category=${props.category}`;
       const data = await fetch(url);
       const parsed_data = await data.json();
-      setArticles(articles.concat(parsed_data.articles));
-      setTotalResults(parsed_data.totalResults);
+      setArticles((prevArticles) => [...prevArticles, ...parsed_data.articles]);
       setPage(nextPage);
     } catch (error) {
       console.error("Error fetching more data:", error);
+      setError(true);
     }
   };
 
   return (
     <>
       <p className="headlines">NewsEx - Top Headlines</p>
-      {articles && ( // Add this condition to check if articles is not undefined
+      {error ? (
+        <div className="error-message">Error fetching news data. Please try again later.</div>
+      ) : (
         <InfiniteScroll
           dataLength={articles.length}
           next={fetchMoreData}
-          hasMore={articles.length !== totalResults}
+          hasMore={articles.length !== 0} // Adjusted the condition here
         >
           <div className="container">
             {articles.map((element, index) => (
