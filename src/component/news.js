@@ -1,86 +1,63 @@
 import "./news.css";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import NewsUpdate from "./news_update";
 import InfiniteScroll from "react-infinite-scroll-component";
-
-// ... (imports remain the same)
+import { useState } from "react";
 
 const News = (props) => {
-  const [articles, setArticles] = useState({});
-  const [page, setPage] = useState(1);
-  const [totalResults, setTotalResults] = useState(0);
+  const [articles, setatrticles] = useState([]);
+  const [page, setpage] = useState(1);
+  const [totalResults, settotalResults] = useState(0);
 
-  const updateNews = async () => {
+  const UpdateNews = async () => {
     const url = `https://newsapi.org/v2/top-headlines?country=${props.country}&apiKey=969db4cd0c684fdc9b4fac646850d457&page=${page}&pageSize=10&category=${props.category}`;
     let data = await fetch(url);
     let parsed_data = await data.json();
-
-    // Merge the new articles with the existing ones using the 'url' property as the key
-    setArticles((prevArticles) => {
-      return { ...prevArticles, ...parsed_data.articles.reduce((obj, article) => {
-        obj[article.url] = article;
-        return obj;
-      }, {}) };
-    });
-
-    setTotalResults(parsed_data.totalResults);
+    setatrticles(parsed_data.articles);
+    settotalResults(parsed_data.totalResults);
   };
-
   useEffect(() => {
-    document.title = `NewsEx - ${props.category}`;
-    updateNews();
+    document.title=`NewsEx - ${props.category}`
+    UpdateNews(); 
     // eslint-disable-next-line
   }, [props.category]);
 
   const fetchMoreData = async () => {
-    const nextPage = page + 1;
-    const url = `https://newsapi.org/v2/top-headlines?country=${props.country}&apiKey=969db4cd0c684fdc9b4fac646850d457&page=${nextPage}&pageSize=10&category=${props.category}`;
+    const url = `https://newsapi.org/v2/top-headlines?country=${props.country}&apiKey=969db4cd0c684fdc9b4fac646850d457&page=${page + 1}&pageSize=10&category=${props.category}`;
+    setpage(page + 1);
     let data = await fetch(url);
     let parsed_data = await data.json();
-
-    // Merge the new articles with the existing ones using the 'url' property as the key
-    setArticles((prevArticles) => {
-      return { ...prevArticles, ...parsed_data.articles.reduce((obj, article) => {
-        obj[article.url] = article;
-        return obj;
-      }, {}) };
-    });
-
-    setTotalResults(parsed_data.totalResults);
-    setPage(nextPage);
+    setatrticles(articles.concat(parsed_data.articles));
+    settotalResults(parsed_data.totalResults);
   };
-
-  const uniqueArticles = Object.values(articles);
-
   return (
     <>
       <p className="headlines">NewsEx - Top Headlines</p>
       <InfiniteScroll
-        dataLength={uniqueArticles.length}
+        dataLength={articles.length}
         next={fetchMoreData}
-        hasMore={uniqueArticles.length !== totalResults}
+        hasMore={articles.length !== totalResults}
       >
         <div className="container">
-          {uniqueArticles.map((element, index) => (
-            <NewsUpdate
-              key={index}
-              news_url={element.url}
-              name={element.source.name}
-              author={element.author}
-              date={element.publishedAt}
-              image={element.urlToImage}
-              title={element.title ? element.title.slice(0, 75) : ""}
-              description={
-                element.description
-                  ? element.description
-                  : element.title.slice(0, 90)
-              }
-            />
-          ))}
+          {articles.map((element, index) => {
+            return (
+              <NewsUpdate key={index}
+                news_url={element.url}
+                name={element.source.name}
+                author={element.author}
+                date={element.publishedAt}
+                image={element.urlToImage}
+                title={element.title ? element.title.slice(0, 75) : ""}
+                description={
+                  element.description
+                    ? element.description
+                    : element.title.slice(0, 90)
+                }/>
+            );
+          })}
         </div>
       </InfiniteScroll>
     </>
   );
 };
-
 export default News;
