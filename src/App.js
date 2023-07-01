@@ -2,12 +2,12 @@ import "./App.css";
 import React from "react";
 import Navbar from "./component/navbar";
 import News from "./component/news";
-import {BrowserRouter as Router,Route,Routes,} from "react-router-dom";
+import {BrowserRouter,Route,Routes,} from "react-router-dom";
 
 const App = () => {
     return (
       <div>
-        <Router>
+        <BrowserRouter basename="NewsEx">
           <Navbar />
           <Routes>
             <Route
@@ -43,7 +43,7 @@ const App = () => {
               element={<News key='science' country="in" category="science" />}  
             />
           </Routes>
-        </Router>
+        </BrowserRouter>
       </div>
     );
   }
